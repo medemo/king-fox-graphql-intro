@@ -1,17 +1,7 @@
 const { gql } = require('apollo-server');
 const uuid = require('uuid/v1')
+const axios = require('axios')
 
-const users = [
-  {
-    "id": "4afdc740-3831-11ea-8227-05cc6b95d096",
-    "name": "Andreas",
-    "age": 17
-  },
-  {
-    "id": "6ebd8ad0-3831-11ea-8227-05cc6b95d096",
-    "name": "Devita"
-  }
-]
 
 exports.userTypeDefs = gql`
   extend type Query {
@@ -30,26 +20,23 @@ exports.userTypeDefs = gql`
 
 exports.userResolvers = {
   Query: {
-    users: () => {
-      return users
+    users: async () => {
+      const { data } = await axios.get('http://localhost:3000/users')
+      return data
     },
-    user: (parent, args, context, info) => {
+    user: async (parent, args, context, info) => {
       const { id } = args
-      return {
-        id: id,
-        name: 'sdf'
-      }
+      const { data } = await axios.get(`http://localhost:3000/users/${id}`)
+      return data
     }
   },
   Mutation: {
-    addUser: (parent, args) => {
+    addUser: async (parent, args) => {
       // post ke microservice
-      const newUser = {
-        id: uuid(),
+      const { data } = await axios.post('http://localhost:3000/users', {
         name: args.name
-      }
-      users.push(newUser)
-      return newUser
+      })
+      return data
     }
   },
   User: {
