@@ -14,21 +14,21 @@ const GET_USERS = gql`
 
 export default function Users() {
   const { data, loading, error } = useQuery(GET_USERS)
-
-  console.log(data?.users?.length)
-
-  if (loading || !data)
+  
+  if (loading)
     return <p>Loading...</p>
 
-  if (error)
-    return <p>error</p>
+  if (error) {
+    const err = error?.graphQLErrors.find(err => err.path.includes('users')) ?? error
+    return <p>{err.message}</p>
+  }
 
   return (
     <div>
       <h1>List of users</h1>
       <ul>
         {
-          data.users.map(user => {
+          data?.users.map(user => {
             return (
               <li key={user.id}>{user.name}</li>
             )

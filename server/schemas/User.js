@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server');
+const { gql, ApolloError } = require('apollo-server');
 const uuid = require('uuid/v1')
 const axios = require('axios')
 
@@ -20,7 +20,9 @@ exports.userTypeDefs = gql`
 
 exports.userResolvers = {
   Query: {
-    users: async () => {
+    users: async (parent, args, context) => {
+      if (!context.user) throw new ApolloError('You must login first')
+      
       const { data } = await axios.get('http://localhost:3000/users')
       return data
     },

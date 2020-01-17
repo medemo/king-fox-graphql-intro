@@ -8,6 +8,7 @@ const GET_USERS = gql`
     users {
       id
       name
+      age
     }
   }
 `
@@ -23,7 +24,7 @@ const ADD_USER = gql`
 `
 
 export default function Users() {
-  const [addUser, { data, loading, error }] = useMutation(
+  const [addUser] = useMutation(
     ADD_USER,
     {
       update(cache, { data: { addUser } }) {
